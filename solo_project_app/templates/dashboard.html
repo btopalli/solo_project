@@ -1,0 +1,131 @@
+{% extends 'base.html' %} {% block 'content' %} {% block 'head' %}
+
+<link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet"> {% endblock %}
+
+
+
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1>Dashboard</h1>
+        <p><a href="{% url 'ad_form' %}" class="btn btn-primary btn-lg mx-auto">Create a new ad!</a></p>
+    </div>
+
+</div>
+
+{% if ads %}
+<div class="col-md-12">
+    <h2 class="text-center my-5">Your ads</h2>
+    <table class="table table table-striped" id="MyAds">
+        <thead>
+            <tr>
+                <th>View</th>
+                <th>Edit</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>City</th>
+                <th>Date</th>
+                <th>Valid</th>
+                <th>Views</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ad in ads %}
+            <tr id="tr_{{ ad.id }}">
+                <td class="text-center">
+                    <a href="{% url 'ad_view' id=ad.id %}" target="_blank"><i class="far fa-eye"></i></a>
+                </td>
+                <td class="text-center">
+                    {% if ad.user_id == request.session.userid %} <a href="{% url 'ad_edit' id=ad.id %}"><i class="far fa-edit"></i></a> {% endif %}
+                </td>
+                <td>{{ ad.title }}</td>
+                <td>{{ ad.category.name }}</td>
+                <td>{{ ad.user.city.city_name }}</td>
+                <td>
+                    <span style="display:none;">{{ ad.created_at | date:"U" }}</span> {{ ad.created_at | date:"m/d/Y" }}</td>
+                <td>
+                    <span style="display:none;">{{ ad.end_date | date:"U" }}</span> {{ ad.end_date | date:"m/d/Y" }}</td>
+                <td>{{ ad.views }}</td>
+                <td class="text-center deleterow">{% if ad.user_id == request.session.userid %}
+                    <a class="delete" data-id="{{ ad.id }}" href="#"><i class="far fa-trash-alt"></i></a> {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% else %}
+<div class="col-md-12 text-center my-5">
+    <p>You have not created any ad yet!</p>
+</div>
+{% endif %} {% if favorited_ads %}
+<div class="col-md-12">
+    <h2 class="my-5 text-center">Your favorited ads</h2>
+    <table class="table table table-striped">
+        <tr>
+            <th>View</th>
+            <th>Title</th>
+            <th>Posted by</th>
+            <th>Category</th>
+            <th>City</th>
+            <th>Date</th>
+            <th>Valid</th>
+        </tr>
+
+
+        {% for favorited_ad in favorited_ads %}
+        <tr>
+            <td>
+                <a href="{% url 'ad_view' id=favorited_ad.id %}" target="_blank"><i class="far fa-eye"></i></a>
+            </td>
+            <td>{{ favorited_ad.title }}</td>
+            <td>{{ favorited_ad.user.first_name }} {{ favorited_ad.user.last_name }}</td>
+            <td>{{ favorited_ad.category.name }}</td>
+            <td>{{ favorited_ad.user.city.city_name }}</td>
+            <td>{{ favorited_ad.created_at | date:"m/d/Y" }}</td>
+            <td>{{ favorited_ad.end_date | date:"m/d/Y" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% else %}
+<div class="col-md-12 text-center my-5">
+    <p>You have not favorited any ad yet!</p>
+</div>
+{% endif %}
+</div>
+</div>
+{% endblock %} {% block 'javascript' %}
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+        $('#MyAds').DataTable();
+
+        $(".delete").click(function(e) {
+            e.preventDefault()
+            var id = $(this).data('id')
+            $('.deleterow').LoadingOverlay("show")
+            $.get("{% url 'ad_delete' %}", {
+                        id: id
+                    },
+                    function(result, status, xhr) {
+                        if (result.success == 1) {
+                            $("#tr_" + id).remove()
+                        }
+
+                    })
+                .fail(function(data) {
+                    alert("Error")
+                });
+
+            $('.deleterow').LoadingOverlay("hide")
+        })
+    })
+</script>
+{% endblock %}

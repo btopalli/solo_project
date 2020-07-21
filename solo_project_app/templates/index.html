@@ -1,14 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %} {% block 'content' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<form method="GET">
+    <div class="row">
 
-<body>
+        <div class="col-md-3">
+            <select name="category_id" class="form-control">
+            <option value="0">All categories</option>
+            {% for category in categories %}
+            {% if category_id == category.id %}
+                <option selected value="{{ category.id }}">{{ category.name }}</option>
+            {% else %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        </div>
+        <div class="col-md-3">
+            <input type="submit" class="btn btn-primary" value="FILTER">
+        </div>
+    </div>
+</form>
 
-</body>
-
-</html>
+<div class="row">
+    {% for ad in ads %}
+    <div class="col-md-4 mt-5">
+        <h3><a href="{% url 'ad_view' id=ad.id %}">{{ ad.title }}</a></h3>
+        {% if ad.image != "" %}
+        <div>
+            <a href="{% url 'ad_view' id=ad.id %}"><img src="media/{{ ad.image }}" class="img-fluid img-thumbnail"></a>
+        </div>
+        {% endif %}
+        <article style="height:100px;overflow:hidden">{{ ad.description | safe }}...</article>
+    </div>
+    {% endfor %} {% endblock %}
+</div>

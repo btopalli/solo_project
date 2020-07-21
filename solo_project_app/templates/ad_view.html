@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% block 'content' %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center my-5">{{ ad.title }}</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                {% if ad.image != "" %}
+                <img src="/media/{{ ad.image }}" class="img-fluid img-thumbnail"> {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <table class="table">
+                    <tr>
+                        <td>Category</td>
+                        <td class="font-weight-bold">{{ ad.category.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td class="font-weight-bold">{{ ad.user.city.city_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Posted on</td>
+                        <td class="font-weight-bold">{{ ad.created_at | date:"m/d/Y H:i:s" }}</td>
+                    </tr>
+                    {% if ad.created_at != ad.updated_at %}
+                    <tr>
+                        <td>Last update</td>
+                        <td class="font-weight-bold">{{ ad.updated_at | date:"m/d/Y H:i:s" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Valid until</td>
+                        <td class="font-weight-bold">{{ ad.end_date | date:"m/d/Y" }}</td>
+                    </tr>
+
+                    {% endif %}
+
+                    <tr>
+                        <td>Posted by</td>
+                        <td class="font-weight-bold">{{ ad.user.first_name }} {{ ad.user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Contact number</td>
+                        <td class="font-weight-bold">{{ ad.user.contact_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Views</td>
+                        <td class="font-weight-bold">{{ ad.views }}</td>
+                    </tr>
+                    {% if request.session.loggedIn %}
+                    <tr>
+                        <td>Favorite</td>
+                        <td id="heart_td">
+                            {% if user in ad.users_who_liked.all %}
+                            <p><a class="hide" id="favorite" data-id="{{ ad.id }}" href="#"><i class="heart far fa-heart"></i></a>
+                                <a class="show" id="unfavorite" href="{{ ad.id }}"><i class="heart fas fa-heart"></i></a></p>
+                            {% else %}
+                            <p><a class="show" id="favorite" data-id="{{ ad.id }}" href="#"><i class="heart far fa-heart"></i></a>
+                                <a class="hide" id="unfavorite" href="{{ ad.id }}"><i class="heart fas fa-heart"></i></a></p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+                <button class="btn btn-primary" onClick="javascript:history.go(-1);">Back</button>
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <h4>Description</h4>
+            <article class="my-4 description">{{ ad.description | safe }}</article>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %} {% block 'javascript' %}
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#favorite").click(function(e) {
+            e.preventDefault();
+            var id = $("#favorite").data('id')
+            $('.heart').LoadingOverlay("show")
+
+            $.get("{% url 'favorite' id=ad.id %}", {
+                        id: id
+                    },
+                    function(result, status, xhr) {
+                        if (result.success == 1) {
+                            $("#favorite").hide()
+                            $("#unfavorite").show()
+                        }
+
+                    })
+                .fail(function(data) {
+                    alert("Error")
+                });
+            $('.heart').LoadingOverlay("hide")
+
+        });
+
+        $("#unfavorite").click(function(e) {
+            e.preventDefault();
+            var id = $("#unfavorite").data('id')
+            $('.heart').LoadingOverlay("show")
+
+            $.get("{% url 'unfavorite' id=ad.id %}", {
+                        id: id
+                    },
+                    function(result, status, xhr) {
+                        if (result.success == 1) {
+                            $("#unfavorite").hide()
+                            $("#favorite").show()
+                        }
+
+                    })
+                .fail(function(data) {
+                    alert("Error")
+                });
+            $('.heart').LoadingOverlay("hide")
+
+        });
+    });
+</script>
+{% endblock %}

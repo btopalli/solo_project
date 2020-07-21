@@ -1,0 +1,77 @@
+{% extends 'base.html' %} {% block 'head' %}
+<script src="https://cdn.ckeditor.com/ckeditor5/20.0.0/classic/ckeditor.js"></script>
+{% endblock %} {% block 'content' %}
+<h3 class="text-center my-5">Hello {{ request.session.first_name }}! Create an ad!</h3>
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+</div>
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 border">
+        <form method="POST" action="{% url 'ad_create' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="ad_id" value="{{ ad_id }}">
+            <table class="table">
+                <tr>
+                    <td>Title</td>
+                    <td><input required minlength="10" type="text" name="title" class="form-control" value="{{ ad.title }}"></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><textarea minlength="30" name="description" id="editor" class="form-control" rows="5">{{ ad.description }}</textarea></td>
+                </tr>
+
+                <tr>
+                    <td>Image</td>
+                    <td>
+                        <input type="file" name="image" class="form-control">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Category</td>
+                    <td>
+                        <select name="category_id" class="form-control">
+                        {% for category in categories %}
+                        {% if category.id == ad.category_id %}
+                        <option selected value="{{ category.id }}">{{ category.name }}</option>
+                        {% else %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>End Date</td>
+                    <td>
+                        <input required type="date" name="end_date" value={{ end_date }}></td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td align="right"><a href="#" class="btn btn-secondary">Cancel</a> <input type="submit" value="Submit" class="btn btn-primary"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+</div>
+{% endblock %} {% block 'javascript' %}
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+{% endblock %}

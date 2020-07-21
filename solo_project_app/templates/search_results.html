@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% block 'content' %}
+<div class="row">
+
+    <div class="col-md-12">
+        <h2 class="text-center my-5">Search results</h2>
+        {% if not ads %}
+        <p class="text-center">No results!</p>
+        {% else %}
+        <table class="table table table-striped">
+            <tr>
+                <th>Title</th>
+                <th>Posted by</th>
+                <th>Category</th>
+                <th>City</th>
+                <th>Date</th>
+                <th>Valid</th>
+            </tr>
+
+
+            {% for ad in ads %}
+            <tr>
+                <td><a href="{% url 'ad_view' id=ad.id %}">{{ ad.title }}</a></td>
+                <td>{{ ad.user.first_name }} {{ ad.user.last_name }}</td>
+                <td>{{ ad.category.name }}</td>
+                <td>{{ ad.user.city.city_name }}</td>
+                <td>{{ ad.created_at | date:"m/d/Y" }}</td>
+                <td>{{ ad.end_date | date:"m/d/Y" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+
+</div>
+</div>
+{% endblock %} {% block 'javascript' %}
+<script>
+    $(document).ready(function() {
+        $(".delete").click(function(e) {
+            e.preventDefault()
+            var id = $(this).data('id')
+            $.get("{% url 'ad_delete' %}", {
+                        id: id
+                    },
+                    function(result, status, xhr) {
+                        if (result.success == 1) {
+                            $("#tr_" + id).remove()
+                        }
+
+                    })
+                .fail(function(data) {
+                    alert("Error")
+                });
+        })
+    })
+</script>
+{% endblock %}

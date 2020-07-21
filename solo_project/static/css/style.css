@@ -1,0 +1,29 @@
+body {
+    background-color: lightblue;
+}
+
+.container {
+    background-color: white;
+}
+
+.description {
+    font-size: 1.25em;
+}
+
+.heart {
+    color: red;
+    font-size: 2em;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: inline;
+}
+
+.article {
+    height: 200px;
+    overflow: hidden;
+}

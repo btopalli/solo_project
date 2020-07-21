@@ -1,0 +1,65 @@
+{% extends 'base.html' %} {% block 'content' %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 border">
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <h3 class="text-center my-5">Register</h1>
+                    <form method="POST" action="{% url 'registration' %}">
+                        {% csrf_token %}
+                        <table class="table">
+                            <tr>
+                                <td>First Name</td>
+                                <td><input type="text" class="form-control" name="first_name" value="{{ request.session.first_name }}"></td>
+                            </tr>
+                            <tr>
+                                <td>Last Name</td>
+                                <td><input type="text" class="form-control" name="last_name" value="{{ request.session.last_name }}"></td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td><input type="text" class="form-control" name="email" value="{{ request.session.email }}"></td>
+                            </tr>
+                            <tr>
+                                <td>Password</td>
+                                <td><input type="password" class="form-control" name="password"></td>
+                            </tr>
+                            <tr>
+                                <td>Confirm password</td>
+                                <td><input type="password" class="form-control" name="password2"></td>
+                            </tr>
+                            <tr>
+                                <td>Contact number</td>
+                                <td><input type="text" class="form-control" name="contact_number"></td>
+                            </tr>
+                            <tr>
+                                <td>City</td>
+                                <td>
+                                    <select name="city_id" class="form-control">
+                                            <option value="0">Select a city...</option>
+                                        {% for city in cities %}
+                                        <option value="{{ city.id }}">{{ city.city_name }}</option> {% endfor %}
+                                        </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="right">
+                                    <input type="submit" value="Register" class="btn btn-primary text-right">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
